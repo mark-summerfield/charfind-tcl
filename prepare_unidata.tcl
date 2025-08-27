@@ -19,12 +19,13 @@ const TEMP_FILE [file join [fileutil::tempdir] \
 const DATA_FILE chardata.txt.gz
 
 proc main {} {
-    maybe_download
+    set xmldata [get_chardata]
+    read_xmldata $xmldata
 }
 
-proc maybe_download {} {
-    if {![file isfile $::DATA_FILE] || \
-            [clock format [file atime $::DATA_FILE] -format %Y%m%d] != \
+proc get_chardata {} {
+    if {![file isfile $::TEMP_FILE] || \
+            [clock format [file atime $::TEMP_FILE] -format %Y%m%d] != \
             [clock format now -format %Y%m%d]} {
         puts -nonewline "downloading '${::URL}' "
         set out [open $::TEMP_FILE w]
@@ -32,23 +33,26 @@ proc maybe_download {} {
                     -progress show_progress]
         close $out
         puts ""
-        const BASE [file join [zipfs root] download]
-        zipfs mount $::TEMP_FILE $BASE
-        foreach name [zipfs list *download/*] {
-            set xmldata [readFile $name]
-            break 
-        }
-        zipfs unmount $BASE
-        read_xmldata $xmldata
     } else {
         puts "using existing data in '$::DATA_FILE'"
     }
+    const BASE [file join [zipfs root] download]
+    zipfs mount $::TEMP_FILE $BASE
+    foreach name [zipfs list *download/*] {
+        set xmldata [readFile $name]
+        break 
+    }
+    zipfs unmount $BASE
+    return $xmldata
 }
 
 proc show_progress args { puts -nonewline . ; flush stdout }
 
 # TODO this is MISSING MOST chars!
+# TODO switch to:
+#   regexp -indicies -start $i {<char(.*?)>.*?</char>} $xmldata _ indexes
 proc read_xmldata xmldata {
+    puts "read_xmldata xmldata(len)=[string length $xmldata]"
     set chars [list]
     set i 0
     while {$i < [string length $xmldata]} {
@@ -70,21 +74,23 @@ proc read_xmldata xmldata {
     writeFile $::DATA_FILE binary [zlib gzip [join $data \n] -level 9]
 }
 
+# TODO separate into char-1.tm
 oo::class create Char {
     variable Cp
     variable Name
     variable Words
 }
 
-oo::define Char constructor {chardata} {
+oo::define Char constructor {data} {
+    # if {[string match U+ $data]} { # parse to_string text } else
     set Words [list]
     set i 0
-    while {$i < [string length $chardata]} {
-        set j [string first =\" $chardata $i]
-        set key [string range $chardata $i [expr {$j - 1}]]
+    while {$i < [string length $data]} {
+        set j [string first =\" $data $i]
+        set key [string range $data $i [expr {$j - 1}]]
         set i [expr {$j + 2}]
-        set j [string first \" $chardata $i]
-        set value [string range $chardata $i [expr {$j - 1}]]
+        set j [string first \" $data $i]
+        set value [string range $data $i [expr {$j - 1}]]
         switch $key {
             cp { set Cp [expr {"0x$value"}] }
             na { set Name $value }
