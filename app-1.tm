@@ -14,8 +14,6 @@ oo::define App constructor {} {
     ui::wishinit
     tk appname CharFind
     set Cfg [Config load]
-    option add *insertOffTime 0
-    ttk::style configure . -insertofftime 0
     my make_ui
 }
 
