@@ -47,8 +47,9 @@ oo::define App method make_widgets {} {
         -compound left -image [ui::icon edit-find.svg $::MENU_ICON_SIZE]
     ttk::frame .treeframe
     set Tree [ttk::treeview .treeframe.tree -selectmode browse \
-                -striped true -columns Name]
-    $Tree column 0 -stretch true
+                -striped true -columns {chr name}]
+    $Tree column 1 -stretch true
+    # TODO headers
     ui::scrollize .treeframe tree vertical
     ttk::frame .bottomframe
     ttk::label .bottomframe.clickedLabel -text "Clicked:" -underline 0
