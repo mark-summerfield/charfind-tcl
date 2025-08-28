@@ -1,13 +1,90 @@
 # Copyright © 2025 Mark Summerfield. All rights reserved.
 
+package require config
 package require ui
 
-namespace eval app {}
-
-proc app::main {} {
-    ui::wishinit
-    tk appname Charfind
-    wm title . [tk appname]
-    
+oo::class create App {
+    variable Cfg
+    variable SearchEntry
+    variable ClickedEntry
+    variable Tree
 }
 
+oo::define App constructor {} {
+    ui::wishinit
+    tk appname CharFind
+    set Cfg [Config load]
+    option add *insertOffTime 0
+    ttk::style configure . -insertofftime 0
+    my make_ui
+}
+
+oo::define App method show {} {
+    wm deiconify .
+    wm geometry . [$Cfg geometry]
+    raise .
+    focus $SearchEntry
+    update
+}
+
+oo::define App method make_ui {} {
+    my prepare_ui
+    my make_widgets
+    my make_layout
+    my make_bindings
+}
+
+oo::define App method prepare_ui {} {
+    wm withdraw .
+    wm title . [tk appname]
+    wm iconname . [tk appname]
+    catch {wm iconphoto . -default [ui::icon icon.svg]}
+}
+
+oo::define App method make_widgets {} {
+    ttk::frame .topframe
+    ttk::label .topframe.searchLabel -text "Search For:" -underline 7
+    set SearchEntry [ttk::entry .topframe.searchEntry]
+    ttk::button .topframe.searchButton -text Search -width 6 -underline 0 \
+        -compound left -image [ui::icon edit-find.svg $::MENU_ICON_SIZE]
+    ttk::frame .treeframe
+    set Tree [ttk::treeview .treeframe.tree -selectmode browse \
+                -striped true -columns Name]
+    $Tree column 0 -stretch true
+    ui::scrollize .treeframe tree vertical
+    ttk::frame .bottomframe
+    ttk::label .bottomframe.clickedLabel -text "Clicked:" -underline 0
+    set ClickedEntry [ttk::entry .bottomframe.clickedEntry]
+}
+
+oo::define App method make_layout {} {
+    const opts "-pady 3 -padx 3"
+    pack .topframe.searchLabel -side left {*}$opts
+    pack $SearchEntry -side left -fill x -expand true {*}$opts
+    pack .topframe.searchButton -side left {*}$opts
+    pack .topframe -fill x
+    pack .treeframe -fill both -expand true -padx 3
+    pack .bottomframe.clickedLabel -side left {*}$opts
+    pack $ClickedEntry -fill x -expand true {*}$opts
+    pack .bottomframe -fill x
+}
+
+oo::define App method make_bindings {} {
+    bind $Tree <<TreeviewSelect>> [callback on_tree_select]
+    bind . <Escape> [callback on_quit]
+    bind $SearchEntry <Return> [callback on_search]
+    bind . <Alt-c> "focus $ClickedEntry"
+    bind . <Alt-f> "focus $SearchEntry"
+    bind . <Alt-s> [callback on_search]
+    wm protocol . WM_DELETE_WINDOW [callback on_quit]
+}
+
+oo::define App method on_tree_select {} {
+    puts "TODO on_tree_select"
+}
+
+oo::define App method on_search {} {
+    puts "TODO on_search"
+}
+
+oo::define App method on_quit {} { $Cfg save ; exit }

@@ -7,7 +7,7 @@ nagelfar.sh \
     | grep -v Unknown.subcommand..home..to..file \
     | grep -v Found.constant.*which.is.also.a.variable
 du -sh .git
-ls -sh .store.str
+ls -sh .charfind.str
 clc -s -l tcl
 str s
 git st

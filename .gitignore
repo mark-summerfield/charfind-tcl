@@ -50,3 +50,4 @@ zOld/
 .qmake.stash
 *.str
 chardata.txt.gz
+unidata.db

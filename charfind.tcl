@@ -10,4 +10,7 @@ tcl::tm::path add $APPPATH
 
 package require app
 
-app::main
+const VERSION 0.1.0
+
+set app [App new]
+$app show
