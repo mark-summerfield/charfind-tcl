@@ -2,12 +2,12 @@
 
 `charfind.tcl` is a GUI Unicode character finder.
 
-Once installed you need to create the unicode character database
+Once installed you must create the unicode character database
 (`unidata.db`) the application depends on. To do this run:
 
 `prepare_unidata.tcl`
 
-This may take a few minutes to run.
+This may take a few minutes to run but need only be done once.
 
 ![Screenshot](images/screenshot.png)
 

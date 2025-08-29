@@ -9,7 +9,7 @@ package require util
 
 oo::class create App {
     variable Cfg
-    variable SearchEntry
+    variable SearchCombo
     variable ClickedEntry
     variable Tree
     variable StatusLabel
@@ -27,7 +27,7 @@ oo::define App method show {} {
     wm deiconify .
     wm geometry . [$Cfg geometry]
     raise .
-    focus $SearchEntry
+    focus $SearchCombo
     update
 }
 
@@ -48,9 +48,12 @@ oo::define App method prepare_ui {} {
 oo::define App method make_widgets {} {
     ttk::frame .topframe
     ttk::label .topframe.searchLabel -text "Search For:" -underline 7
-    set SearchEntry [ttk::entry .topframe.searchEntry]
-    $SearchEntry insert 0 [$Cfg search]
-    $SearchEntry selection range 0 end
+    set search [$Cfg search]
+    set SearchCombo [ttk::combobox .topframe.searchCombo -values \
+        [lsort -dictionary -unique \
+            "$search check ballot bullet greek math sign symbol"]]
+    $SearchCombo set $search
+    $SearchCombo selection range 0 end
     ttk::button .topframe.searchButton -text Search -underline 0 \
         -compound left -command [callback on_search] \
         -image [ui::icon edit-find.svg $::MENU_ICON_SIZE]
@@ -61,6 +64,7 @@ oo::define App method make_widgets {} {
         -underline 0 -compound left -command [callback on_config] \
         -image [ui::icon preferences-system.svg $::MENU_ICON_SIZE]
     set ClickedEntry [ttk::entry .bottomframe.clickedEntry]
+    $ClickedEntry insert 0 [$Cfg clicked]
     set StatusLabel [ttk::label .statusLabel -relief sunken]
 }
 
@@ -74,7 +78,7 @@ oo::define App method make_tree {} {
     $Tree column 0 -width [expr {$cwidth * 7}] -stretch false -anchor center
     $Tree column 1 -stretch true
     $Tree heading #0 -text Chr
-    $Tree heading 0 -text U+…
+    $Tree heading 0 -text U+
     $Tree heading 1 -text Name
     ui::scrollize .treeframe tree vertical
 }
@@ -82,7 +86,7 @@ oo::define App method make_tree {} {
 oo::define App method make_layout {} {
     const opts "-pady 3 -padx 3"
     pack .topframe.searchLabel -side left {*}$opts
-    pack $SearchEntry -side left -fill x -expand true {*}$opts
+    pack $SearchCombo -side left -fill x -expand true {*}$opts
     pack .topframe.searchButton -side left {*}$opts
     pack .topframe -fill x
     pack .treeframe -fill both -expand true -padx 3
@@ -94,12 +98,13 @@ oo::define App method make_layout {} {
 }
 
 oo::define App method make_bindings {} {
+    bind $SearchCombo <<ComboboxSelected>> [callback on_search]
     bind $Tree <<TreeviewSelect>> [callback on_tree_select]
     bind . <Escape> [callback on_quit]
-    bind $SearchEntry <Return> [callback on_search]
+    bind $SearchCombo <Return> [callback on_search]
     bind . <Alt-c> [callback on_config]
-    bind . <Alt-k> "focus $ClickedEntry"
-    bind . <Alt-f> "focus $SearchEntry"
+    bind . <Alt-k> [callback on_clicked]
+    bind . <Alt-f> "focus $SearchCombo"
     bind . <Alt-s> [callback on_search]
     wm protocol . WM_DELETE_WINDOW [callback on_quit]
 }
@@ -110,15 +115,23 @@ oo::define App method on_tree_select {} {
     $ClickedEntry insert end $c
 }
 
+oo::define App method on_clicked {} {
+    focus $ClickedEntry
+    $ClickedEntry selection range 0 end
+}
+
 oo::define App method on_search {} {
     $Tree delete [$Tree children {}]
-    set what [$SearchEntry get]
+    set what [$SearchCombo get]
     if {$what eq ""} {
         $StatusLabel configure -text "Enter a search for term…"
         return
     }
+    set values [$SearchCombo cget -values]
+    lappend values $what
+    $SearchCombo configure -values [lsort -dictionary -unique $values]
     set what [string toupper $what]
-    sqlite3 db $::UNIDATA_FILE
+    sqlite3 db $::UNIDATA_FILE -readonly true
     if {[string match SYM* $what]} {
         db eval {SELECT chr, cp, name FROM chars WHERE is_symbol = TRUE
                  ORDER BY cp} {
@@ -149,7 +162,7 @@ oo::define App method add_row {chr cp name} {
 oo::define App method on_config {} { ConfigForm new $Cfg }
 
 oo::define App method on_quit {} {
-    $Cfg set_search [$SearchEntry get]
+    $Cfg set_search [$SearchCombo get]
     $Cfg set_clicked [$ClickedEntry get]
     $Cfg save
     exit
