@@ -20,7 +20,11 @@ const TEMP_FILE [file join [fileutil::tempdir] \
                            [file tail [dict get [uri::split $::URL] path]]]
 const DB_FILE unidata.db
 
-proc main {} { write_chars [read_xmldata [get_chardata]] }
+proc main {} {
+    set xmldata [get_chardata]
+    set chars [read_xmldata $xmldata]
+    write_chars $chars
+}
 
 proc get_chardata {} {
     if {![file isfile $::TEMP_FILE] || \
@@ -49,6 +53,7 @@ proc show_progress args { puts -nonewline . ; flush stdout }
 
 proc read_xmldata xmldata {
     puts -nonewline "reading XML data "
+    flush stdout
     set chars [list]
     set i 0
     while {$i < [string length $xmldata]} {
@@ -139,8 +144,7 @@ oo::define Char constructor {data} {
         }
         set i [incr j 2]
     }
-    if {$Name eq "" || [string match MODIFIER* $Name] || \
-            [string match COMBINING* $Name]} {
+    if {$Name eq "" || [regexp {^(?:MODIFIER|COMBINING|VARIATION)} $Name]} {
         set valid false
     }
     if {!$valid} { set Cp -1 }

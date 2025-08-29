@@ -43,8 +43,9 @@ oo::define App method make_widgets {} {
     ttk::frame .topframe
     ttk::label .topframe.searchLabel -text "Search For:" -underline 7
     set SearchEntry [ttk::entry .topframe.searchEntry]
-    ttk::button .topframe.searchButton -text Search -width 6 -underline 0 \
-        -compound left -image [ui::icon edit-find.svg $::MENU_ICON_SIZE]
+    ttk::button .topframe.searchButton -text Search -underline 0 \
+        -compound left -command [callback on_search] \
+        -image [ui::icon edit-find.svg $::MENU_ICON_SIZE]
     ttk::frame .treeframe
     set Tree [ttk::treeview .treeframe.tree -selectmode browse \
                 -striped true -columns {chr name}]
@@ -52,7 +53,10 @@ oo::define App method make_widgets {} {
     # TODO headers
     ui::scrollize .treeframe tree vertical
     ttk::frame .bottomframe
-    ttk::label .bottomframe.clickedLabel -text "Clicked:" -underline 0
+    ttk::label .bottomframe.clickedLabel -text Clicked: -underline 4
+    ttk::button .bottomframe.configButton -text Config… -width 0 \
+        -underline 0 -compound left -command [callback on_config] \
+        -image [ui::icon preferences-system.svg $::MENU_ICON_SIZE]
     set ClickedEntry [ttk::entry .bottomframe.clickedEntry]
 }
 
@@ -64,7 +68,8 @@ oo::define App method make_layout {} {
     pack .topframe -fill x
     pack .treeframe -fill both -expand true -padx 3
     pack .bottomframe.clickedLabel -side left {*}$opts
-    pack $ClickedEntry -fill x -expand true {*}$opts
+    pack $ClickedEntry -side left -fill x -expand true {*}$opts
+    pack .bottomframe.configButton -side right {*}$opts
     pack .bottomframe -fill x
 }
 
@@ -72,7 +77,8 @@ oo::define App method make_bindings {} {
     bind $Tree <<TreeviewSelect>> [callback on_tree_select]
     bind . <Escape> [callback on_quit]
     bind $SearchEntry <Return> [callback on_search]
-    bind . <Alt-c> "focus $ClickedEntry"
+    bind . <Alt-c> [callback on_config]
+    bind . <Alt-k> "focus $ClickedEntry"
     bind . <Alt-f> "focus $SearchEntry"
     bind . <Alt-s> [callback on_search]
     wm protocol . WM_DELETE_WINDOW [callback on_quit]
@@ -84,6 +90,10 @@ oo::define App method on_tree_select {} {
 
 oo::define App method on_search {} {
     puts "TODO on_search"
+}
+
+oo::define App method on_config {} {
+    puts "TODO on_config"
 }
 
 oo::define App method on_quit {} { $Cfg save ; exit }

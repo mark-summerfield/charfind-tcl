@@ -1,12 +1,15 @@
-# TODO config: add back Blinking & LastSearch (default "symbols")
+# TODO config: add back Blinking & LastSearch (default "symbol")
 # TODO autopopulate on LastSearch (e.g., symbols)
-# TODO add &Config… button & ConfigForm
+# TODO add ConfigForm
 
 charfind.tcl
 app-1.tm
 config-1.tm
+config_form-1.tm # TODO
 
 prepare_unidata.tcl
+
+README.md
 
 st.sh
 
