@@ -18,7 +18,7 @@ const URL \
     http://www.unicode.org/Public/UCD/latest/ucdxml/ucd.nounihan.flat.zip
 const TEMP_FILE [file join [fileutil::tempdir] \
                            [file tail [dict get [uri::split $::URL] path]]]
-const DB_FILE unidata.db
+const UNIDATA_FILE unidata.db
 
 proc main {} {
     set xmldata [get_chardata]
@@ -30,7 +30,8 @@ proc get_chardata {} {
     if {![file isfile $::TEMP_FILE] || \
             [clock format [file atime $::TEMP_FILE] -format %Y%m%d] != \
             [clock format now -format %Y%m%d]} {
-        puts -nonewline "downloading '${::URL}' "
+        puts -nonewline "downloading '${::URL}'   0%"
+        flush stdout
         set out [open $::TEMP_FILE w]
         set token [http::geturl $::URL -channel $out \
                     -progress show_progress]
@@ -49,14 +50,21 @@ proc get_chardata {} {
     return $xmldata
 }
 
-proc show_progress args { puts -nonewline . ; flush stdout }
+proc show_progress {_ total current} {
+    puts -nonewline [format "\b\b\b\b%3.0f%%" \
+        [expr {$current / double($total) * 100.0}]]
+    flush stdout
+}
 
 proc read_xmldata xmldata {
-    puts -nonewline "reading XML data "
+    puts -nonewline "reading XML data   0%"
     flush stdout
+    set size [string length $xmldata]
+    set one_pc [expr {$size / 100.0}]
+    set pc 0.0
     set chars [list]
     set i 0
-    while {$i < [string length $xmldata]} {
+    while {$i < $size} {
         set j [string first "<char " $xmldata $i]
         if {$j == -1} { break }
         set k [string first /> $xmldata $j]
@@ -65,17 +73,22 @@ proc read_xmldata xmldata {
         set chardata [string range $xmldata [expr {$j + 6}] $k]
         set char [Char new $chardata]
         if {[$char is_valid]} { lappend chars $char }
-        if {[$char cp] % 1024 == 0} { puts -nonewline . ; flush stdout }
+        set new_pc [expr {$i / $one_pc}]
+        if {$new_pc != $pc} {
+            set pc $new_pc
+            puts -nonewline [format "\b\b\b\b%3.0f%%" $pc]
+            flush stdout
+        }
         set i $k
     }
-    puts " [commas [llength $chars]] chars"
+    puts " ([commas [llength $chars]] chars)"
     return $chars
 }
 
 proc commas n {regsub -all {\d(?=(\d{3})+($|\.))} $n {\0,}}
 
 proc write_chars chars {
-    sqlite3 db $::DB_FILE
+    sqlite3 db $::UNIDATA_FILE
     db transaction {
         db eval {
             DROP TABLE IF EXISTS chars;
@@ -94,7 +107,7 @@ proc write_chars chars {
         }
     }
     db close
-    puts "wrote '$::DB_FILE'"
+    puts "wrote '$::UNIDATA_FILE'"
 }
 
 oo::class create Char {

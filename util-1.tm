@@ -85,9 +85,10 @@ proc util::open_webpage url {
     }
 }
 
-proc util::n_s size {
+proc util::n_s {size {comma false}} {
     if {!$size} { return [list "no" "s"] }
     if {$size == 1} { return [list "one" ""] }
+    if {$comma} { return [list [commas $size] "s"] }
     list $size "s"
 }
 

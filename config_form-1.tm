@@ -7,23 +7,13 @@ package require ui
 oo::class create ConfigForm {
     superclass AbstractForm
 
-    variable Ok
     variable Cfg
     variable Blinking
-    variable FontFamily
-    variable FontSize
-    variable RandomStartPage
-    variable Path
 }
 
-oo::define ConfigForm constructor {ok cfg} {
-    set Ok $ok
+oo::define ConfigForm constructor cfg {
     set Cfg $cfg
     set Blinking [$Cfg blinking]
-    set FontFamily [$Cfg fontfamily]
-    set FontSize [$Cfg fontsize]
-    set RandomStartPage [$Cfg randomstartpage]
-    set Path [$Cfg path]
     my make_widgets 
     my make_layout
     my make_bindings
@@ -40,8 +30,8 @@ oo::define ConfigForm method make_widgets {} {
         -underline 12
     ttk::spinbox .configForm.scaleSpinbox -format %.2f -from 1.0 -to 10.0 \
         -increment 0.1
-    $tip .configForm.scaleSpinbox "Application’s scale factor.\nBest\
-        to set this before setting the font.\nRestart to apply."
+    $tip .configForm.scaleSpinbox "Application’s scale factor.\n\
+        Restart to apply."
     .configForm.scaleSpinbox set [format %.2f [tk scaling]]
     ttk::checkbutton .configForm.blinkCheckbutton -text "Cursor Blink" \
         -underline 7 -variable [my varname Blinking]
@@ -49,31 +39,10 @@ oo::define ConfigForm method make_widgets {} {
     $tip .configForm.blinkCheckbutton \
         "Whether the text cursor should blink."
     set opts "-compound left -width 15"
-    ttk::button .configForm.fontButton -text Font… -underline 0 \
-        -image [ui::icon preferences-desktop-font.svg $::ICON_SIZE] \
-        -command [callback on_font] {*}$opts
-    $tip .configForm.fontButton "The font to use for displaying man\
-        pages.\nBest to set the application’s scale (and restart) first."
-    ttk::label .configForm.fontLabel -relief sunken \
-        -text "[$Cfg fontfamily] [$Cfg fontsize]"
-    ttk::label .configForm.startPageLabel -text "Start at"
-    ttk::radiobutton .configForm.randomPageRadiobutton -text "Random Page" \
-        -underline 0 -value true -variable [my varname RandomStartPage]
-    $tip .configForm.randomPageRadiobutton "Start at a random man page."
-    ttk::radiobutton .configForm.lastViewedPageRadiobutton -value false \
-        -text "Last Viewed Page" -underline 0 \
-        -variable [my varname RandomStartPage]
-    $tip .configForm.lastViewedPageRadiobutton \
-        "Start at the last viewed man page."
-    ttk::button .configForm.manPathButton -text "Man Pages Path…" \
-        -underline 0 -image [ui::icon folder.svg $::ICON_SIZE] \
-        -command [callback on_man_path] {*}$opts
-    $tip .configForm.manPathButton "The path to the system’s man pages."
-    ttk::label .configForm.manPathLabel -relief sunken -text [$Cfg path]
     ttk::label .configForm.configFileLabel -foreground gray25 \
         -text "Config file"
     ttk::label .configForm.configFilenameLabel -foreground gray25 \
-        -text [$Cfg filename]
+        -text [$Cfg filename] -relief sunken
     ttk::frame .configForm.buttons
     ttk::button .configForm.buttons.okButton -text OK -underline 0 \
         -compound left -image [ui::icon ok.svg $::ICON_SIZE] \
@@ -88,18 +57,7 @@ oo::define ConfigForm method make_layout {} {
     grid .configForm.scaleLabel -row 0 -column 0 -sticky w {*}$opts
     grid .configForm.scaleSpinbox -row 0 -column 1 -columnspan 2 \
         -sticky we {*}$opts
-    grid .configForm.fontButton -row 1 -column 0 -sticky w {*}$opts
-    grid .configForm.fontLabel -row 1 -column 1 -columnspan 2 -sticky news \
-        {*}$opts
     grid .configForm.blinkCheckbutton -row 2 -column 1 -sticky we
-    grid .configForm.startPageLabel -row 3 -column 0 -sticky w {*}$opts
-    grid .configForm.randomPageRadiobutton -row 3 -column 1 -sticky w \
-        {*}$opts
-    grid .configForm.lastViewedPageRadiobutton -row 3 -column 2 -sticky w \
-        {*}$opts
-    grid .configForm.manPathButton -row 4 -column 0 -sticky w {*}$opts
-    grid .configForm.manPathLabel -row 4 -column 1 -columnspan 2 \
-        -sticky news {*}$opts
     grid .configForm.configFileLabel -row 8 -column 0 -sticky we {*}$opts
     grid .configForm.configFilenameLabel -row 8 -column 1 -columnspan 2 \
         -sticky we {*}$opts
@@ -115,49 +73,13 @@ oo::define ConfigForm method make_bindings {} {
     bind .configForm <Escape> [callback on_cancel]
     bind .configForm <Return> [callback on_ok]
     bind .configForm <Alt-b> {.configForm.blinkCheckbutton invoke}
-    bind .configForm <Alt-f> [callback on_font]
-    bind .configForm <Alt-l> {.configForm.lastViewedPageRadiobutton invoke}
-    bind .configForm <Alt-m> [callback on_man_path]
     bind .configForm <Alt-o> [callback on_ok]
-    bind .configForm <Alt-r> {.configForm.randomPageRadiobutton invoke}
     bind .configForm <Alt-s> {focus .configForm.scaleSpinbox}
-}
-
-oo::define ConfigForm method on_font {} {
-    tk fontchooser configure -parent .configForm \
-        -title "[tk appname] — Choose Font" -font Mono \
-        -command [callback on_font_chosen]
-    tk fontchooser show
-}
-
-oo::define ConfigForm method on_font_chosen args {
-    if {[llength $args] > 0} {
-        set args [lindex $args 0]
-        if {[llength $args] > 1} {
-            set FontFamily [lindex $args 0]
-            set FontSize [lindex $args 1]
-            .configForm.fontLabel configure -text "$FontFamily $FontSize"
-        }
-    }
-}
-
-oo::define ConfigForm method on_man_path {} {
-    set dir [tk_chooseDirectory -parent .configForm -mustexist true \
-        -title "[tk appname] — Choose Man Pages Path" -initialdir $Path]
-    if {$dir ne "" && $dir ne $Path} {
-        .configForm.manPathLabel configure -text $dir
-        set Path $dir
-    }
 }
 
 oo::define ConfigForm method on_ok {} {
     tk scaling [.configForm.scaleSpinbox get]
     $Cfg set_blinking $Blinking
-    $Cfg set_fontfamily $FontFamily
-    $Cfg set_fontsize $FontSize
-    $Cfg set_randomstartpage $RandomStartPage
-    $Cfg set_path $Path
-    $Ok set true
     my delete
 }
 

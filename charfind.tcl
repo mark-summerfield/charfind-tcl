@@ -11,6 +11,7 @@ tcl::tm::path add $APPPATH
 package require app
 
 const VERSION 0.1.0
+const UNIDATA_FILE [file join $APPPATH unidata.db]
 
 set app [App new]
 $app show

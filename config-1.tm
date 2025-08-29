@@ -16,7 +16,7 @@ oo::define Config constructor {{filename ""} {geometry ""}} {
     set Filename $filename
     set Blinking true
     set Geometry $geometry
-    set Search ""
+    set Search "symbol"
     set Clicked ""
 }
 
@@ -46,6 +46,7 @@ oo::define Config classmethod load {} {
             ini::close $ini
         }
     }
+    if {[$config search] eq ""} { $config set_search symbol }
     return $config
 }
 
