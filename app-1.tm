@@ -42,12 +42,12 @@ oo::define App method prepare_ui {} {
     wm withdraw .
     wm title . [tk appname]
     wm iconname . [tk appname]
-    catch {wm iconphoto . -default [ui::icon icon.svg]}
+    wm iconphoto . -default [ui::icon icon.svg]
 }
 
 oo::define App method make_widgets {} {
     ttk::frame .topframe
-    ttk::label .topframe.searchLabel -text "Search For:" -underline 7
+    ttk::label .topframe.searchLabel -text "Search Word:" -underline 7
     set search [$Cfg search]
     set SearchCombo [ttk::combobox .topframe.searchCombo -values \
         [lsort -dictionary -unique \
@@ -104,8 +104,8 @@ oo::define App method make_bindings {} {
     bind $SearchCombo <Return> [callback on_search]
     bind . <Alt-c> [callback on_config]
     bind . <Alt-k> [callback on_clicked]
-    bind . <Alt-f> "focus $SearchCombo"
     bind . <Alt-s> [callback on_search]
+    bind . <Alt-w> [callback on_search_combo]
     wm protocol . WM_DELETE_WINDOW [callback on_quit]
 }
 
@@ -118,6 +118,11 @@ oo::define App method on_tree_select {} {
 oo::define App method on_clicked {} {
     focus $ClickedEntry
     $ClickedEntry selection range 0 end
+}
+
+oo::define App method on_search_combo {} {
+    focus $SearchCombo
+    $SearchCombo selection range 0 end
 }
 
 oo::define App method on_search {} {
@@ -138,13 +143,13 @@ oo::define App method on_search {} {
             my add_row $chr $cp $name
         }
     } elseif {[string is integer $what]} {
-        set hex [expr {int("0x$what")}]
+        set hex [expr {"0x$what"}]
         db eval {SELECT chr, cp, name FROM chars
                  WHERE cp = :hex OR cp = :what ORDER BY cp} {
             my add_row $chr $cp $name
         }
     } elseif {[string is xdigit $what]} {
-        set dec [expr {int("0x$what")}]
+        set dec [expr {"0x$what"}]
         set what %$what%
         db eval {SELECT chr, cp, name FROM chars
                  WHERE cp = :dec OR name LIKE :what ORDER BY cp} {
