@@ -137,6 +137,19 @@ oo::define App method on_search {} {
                  ORDER BY cp} {
             my add_row $chr $cp $name
         }
+    } elseif {[string is integer $what]} {
+        set hex [expr {int("0x$what")}]
+        db eval {SELECT chr, cp, name FROM chars
+                 WHERE cp = :hex OR cp = :what ORDER BY cp} {
+            my add_row $chr $cp $name
+        }
+    } elseif {[string is xdigit $what]} {
+        set dec [expr {int("0x$what")}]
+        set what %$what%
+        db eval {SELECT chr, cp, name FROM chars
+                 WHERE cp = :dec OR name LIKE :what ORDER BY cp} {
+            my add_row $chr $cp $name
+        }
     } else {
         set what %$what%
         db eval {SELECT chr, cp, name FROM chars WHERE name LIKE :what
