@@ -51,7 +51,7 @@ oo::define App method make_widgets {} {
     set search [$Cfg search]
     set SearchCombo [ttk::combobox .topframe.searchCombo -values \
         [lsort -dictionary -unique \
-            "$search check ballot bullet greek math sign symbol"]]
+            "$search arrow check ballot bullet greek math sign symbol"]]
     $SearchCombo set $search
     $SearchCombo selection range 0 end
     ttk::button .topframe.searchButton -text Search -underline 0 \
