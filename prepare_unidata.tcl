@@ -67,10 +67,11 @@ proc read_xmldata xmldata {
     while {$i < $size} {
         set j [string first "<char " $xmldata $i]
         if {$j == -1} { break }
-        set k [string first /> $xmldata $j]
-        set m [string first </char> $xmldata $j]
-        if {$k == -1 || ($m != -1 && $m < $k)} { set k $m }
-        set chardata [string range $xmldata [expr {$j + 6}] $k]
+        if {![regexp -indices -start $j (/>|</char>) $xmldata _ pq]} {
+            break
+        }
+        lassign $pq p q
+        set chardata [string range $xmldata [expr {$j + 6}] $p]
         set char [Char new $chardata]
         if {[$char is_valid]} { lappend chars $char }
         set new_pc [expr {$i / $one_pc}]
@@ -79,7 +80,7 @@ proc read_xmldata xmldata {
             puts -nonewline [format "\b\b\b\b%3.0f%%" $pc]
             flush stdout
         }
-        set i $k
+        set i $q
     }
     puts " ([commas [llength $chars]] chars)"
     return $chars

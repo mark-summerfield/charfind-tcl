@@ -7,7 +7,7 @@ Once installed you must create the unicode character database
 
 `prepare_unidata.tcl`
 
-This may take a few minutes to run but need only be done once.
+This may take a few seconds to run but need only be done once.
 
 ![Screenshot](images/screenshot.png)
 
