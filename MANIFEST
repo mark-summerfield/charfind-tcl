@@ -7,7 +7,7 @@ about_form-1.tm
 prepare_unidata.tcl
 
 abstract_form-1.tm
-messagebox_form-1.tm
+message_form-1.tm
 ui-1.tm
 util-1.tm
 

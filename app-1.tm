@@ -3,7 +3,7 @@
 package require about_form
 package require config
 package require config_form
-package require messagebox_form
+package require message_form
 package require sqlite3 3
 package require textutil::string
 package require ui
@@ -130,7 +130,7 @@ oo::define App method make_bindings {} {
 
 oo::define App method on_startup {} {
     if {![file isfile $::UNIDATA_FILE]} {
-        MessageBoxForm show "[tk appname] — Missing Data" \
+        MessageForm show "[tk appname] — Missing Data" \
             "Cannot find '$::UNIDATA_FILE'.\nRun the command line\
             tool:\n\tprepare_unidata.tcl\nto create the data file.\
             (This must be done only once.)" Close error
