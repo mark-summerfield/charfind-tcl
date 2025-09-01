@@ -13,10 +13,5 @@ package require app
 const VERSION 1.0.0
 const UNIDATA_FILE [file join $APPPATH unidata.db]
 
-if {![file isfile $::UNIDATA_FILE]} {
-    puts "run prepare_unidata.tcl to generate unidata.db"
-    exit 1
-}
-
 set app [App new]
 $app show

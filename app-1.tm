@@ -3,6 +3,7 @@
 package require about_form
 package require config
 package require config_form
+package require messagebox_form
 package require sqlite3 3
 package require textutil::string
 package require ui
@@ -21,7 +22,6 @@ oo::define App constructor {} {
     tk appname CharFind
     set Cfg [Config load]
     my make_ui
-    my on_search
 }
 
 oo::define App method show {} {
@@ -30,6 +30,7 @@ oo::define App method show {} {
     raise .
     focus $SearchCombo
     update
+    my on_startup
 }
 
 oo::define App method make_ui {} {
@@ -57,7 +58,7 @@ oo::define App method make_widgets {} {
     $SearchCombo selection range 0 end
     ttk::button .topframe.searchButton -text Search -underline 0 \
         -compound left -command [callback on_search] \
-        -image [ui::icon edit-find.svg $::MENU_ICON_SIZE]
+        -image [ui::icon edit-find.svg $::ICON_SIZE]
     my make_tree
     ttk::frame .bottomframe
     ttk::label .bottomframe.clickedLabel -text Clicked: -underline 4
@@ -120,6 +121,17 @@ oo::define App method make_bindings {} {
     bind . <Alt-s> [callback on_search]
     bind . <Alt-w> [callback on_search_combo]
     wm protocol . WM_DELETE_WINDOW [callback on_quit]
+}
+
+oo::define App method on_startup {} {
+    if {![file isfile $::UNIDATA_FILE]} {
+        MessageBoxForm show "[tk appname] — Missing Data" \
+            "Cannot find '$::UNIDATA_FILE'.\nRun the command line\
+            tool:\n\tprepare_unidata.tcl\nto create the data file.\
+            (This must be done only once.)" Close error
+        exit 1
+    }
+    my on_search
 }
 
 oo::define App method on_tree_select {} {
