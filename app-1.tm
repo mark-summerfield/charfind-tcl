@@ -1,5 +1,6 @@
 # Copyright © 2025 Mark Summerfield. All rights reserved.
 
+package require about_form
 package require config
 package require config_form
 package require sqlite3 3
@@ -60,9 +61,15 @@ oo::define App method make_widgets {} {
     my make_tree
     ttk::frame .bottomframe
     ttk::label .bottomframe.clickedLabel -text Clicked: -underline 4
-    ttk::button .bottomframe.configButton -text Config… -width 0 \
-        -underline 0 -compound left -command [callback on_config] \
+    ttk::menubutton .bottomframe.moreButton -text More -underline 0
+    menu .bottomframe.moreButton.menu
+    .bottomframe.moreButton.menu add command -label Config… -underline 0 \
+        -compound left -command [callback on_config] \
         -image [ui::icon preferences-system.svg $::MENU_ICON_SIZE]
+    .bottomframe.moreButton.menu add command -label About -underline 0 \
+        -compound left -command [callback on_about] \
+        -image [ui::icon about.svg $::MENU_ICON_SIZE]
+    .bottomframe.moreButton configure -menu .bottomframe.moreButton.menu
     set ClickedEntry [ttk::entry .bottomframe.clickedEntry]
     $ClickedEntry insert 0 [$Cfg clicked]
     set StatusLabel [ttk::label .statusLabel -relief sunken]
@@ -92,7 +99,7 @@ oo::define App method make_layout {} {
     pack .treeframe -fill both -expand true -padx 3
     pack .bottomframe.clickedLabel -side left {*}$opts
     pack $ClickedEntry -side left -fill x -expand true {*}$opts
-    pack .bottomframe.configButton -side right {*}$opts
+    pack .bottomframe.moreButton -side right {*}$opts
     pack .bottomframe -fill x
     pack .statusLabel -fill x
 }
@@ -104,6 +111,12 @@ oo::define App method make_bindings {} {
     bind $SearchCombo <Return> [callback on_search]
     bind . <Alt-c> [callback on_config]
     bind . <Alt-k> [callback on_clicked]
+    bind . <Alt-m> {
+        tk_popup .bottomframe.moreButton.menu \
+            [expr {[winfo rootx .bottomframe.moreButton]}] \
+            [expr {[winfo rooty .bottomframe.moreButton] + \
+                   [winfo height .bottomframe.moreButton]}]
+    }
     bind . <Alt-s> [callback on_search]
     bind . <Alt-w> [callback on_search_combo]
     wm protocol . WM_DELETE_WINDOW [callback on_quit]
@@ -178,6 +191,8 @@ oo::define App method add_row {chr cp name} {
 }
 
 oo::define App method on_config {} { ConfigForm new $Cfg }
+
+oo::define App method on_about {} { AboutForm new }
 
 oo::define App method on_quit {} {
     $Cfg set_search [$SearchCombo get]

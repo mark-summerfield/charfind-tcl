@@ -1,9 +1,8 @@
-# TODO add a &More button with &Config and &About options
-
-charfind.tcl
+charfind.tcl # VERSION
 app-1.tm
 config-1.tm
 config_form-1.tm
+about_form-1.tm
 
 prepare_unidata.tcl
 
