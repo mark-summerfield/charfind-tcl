@@ -70,6 +70,10 @@ oo::define App method make_widgets {} {
     .bottomframe.moreButton.menu add command -label About -underline 0 \
         -compound left -command [callback on_about] \
         -image [ui::icon about.svg $::MENU_ICON_SIZE]
+    .bottomframe.moreButton.menu add separator
+    .bottomframe.moreButton.menu add command -label Quit -underline 0 \
+        -compound left -command [callback on_quit] -accelerator Ctrl+Q \
+        -image [ui::icon quit.svg $::MENU_ICON_SIZE]
     .bottomframe.moreButton configure -menu .bottomframe.moreButton.menu
     set ClickedEntry [ttk::entry .bottomframe.clickedEntry]
     $ClickedEntry insert 0 [$Cfg clicked]
@@ -118,6 +122,7 @@ oo::define App method make_bindings {} {
             [expr {[winfo rooty .bottomframe.moreButton] + \
                    [winfo height .bottomframe.moreButton]}]
     }
+    bind . <Control-q> [callback on_quit]
     bind . <Alt-s> [callback on_search]
     bind . <Alt-w> [callback on_search_combo]
     wm protocol . WM_DELETE_WINDOW [callback on_quit]
