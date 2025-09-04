@@ -28,7 +28,6 @@ oo::define App method show {} {
     wm deiconify .
     wm geometry . [$Cfg geometry]
     raise .
-    focus $SearchCombo
     update
     my on_startup
 }
@@ -135,6 +134,7 @@ oo::define App method on_startup {} {
             (This must be done only once.)" Close error
         exit 1
     }
+    focus $SearchCombo
     my on_search
 }
 
