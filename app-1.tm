@@ -41,7 +41,6 @@ oo::define App method make_ui {} {
 }
 
 oo::define App method prepare_ui {} {
-    wm withdraw .
     wm title . [tk appname]
     wm iconname . [tk appname]
     wm iconphoto . -default [ui::icon icon.svg]

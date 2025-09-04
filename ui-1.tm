@@ -5,6 +5,7 @@ package require autoscroll 1
 namespace eval ui {}
 
 proc ui::wishinit {} {
+    wm withdraw .
     option add *tearOff 0
     ttk::style theme use clam
     const ::LINEHEIGHT [expr {[font metrics TkDefaultFont -linespace] \
