@@ -80,9 +80,12 @@ oo::define App method make_widgets {} {
 
 oo::define App method make_tree {} {
     ttk::frame .treeframe
+    font create BigFont -family [font configure TkDefaultFont -family] \
+        -size [expr {3 + [font configure TkDefaultFont -size]}]
+    ttk::style configure Treeview -font BigFont
     set Tree [ttk::treeview .treeframe.tree -selectmode browse \
                 -striped true -columns {chr name}]
-    set cwidth [font measure TkDefaultFont W]
+    set cwidth [font measure BigFont W]
     $Tree column #0 -width [expr {$cwidth * 3}] -stretch false \
         -anchor center
     $Tree column 0 -width [expr {$cwidth * 7}] -stretch false -anchor center
