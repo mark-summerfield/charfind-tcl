@@ -43,6 +43,9 @@ oo::define App method prepare_ui {} {
     wm title . [tk appname]
     wm iconname . [tk appname]
     wm iconphoto . -default [ui::icon icon.svg]
+    font create BigFont -family [font configure TkDefaultFont -family] \
+        -size [expr {3 + [font configure TkDefaultFont -size]}]
+    ttk::style configure Treeview -font BigFont
 }
 
 oo::define App method make_widgets {} {
@@ -80,9 +83,6 @@ oo::define App method make_widgets {} {
 
 oo::define App method make_tree {} {
     ttk::frame .treeframe
-    font create BigFont -family [font configure TkDefaultFont -family] \
-        -size [expr {3 + [font configure TkDefaultFont -size]}]
-    ttk::style configure Treeview -font BigFont
     set Tree [ttk::treeview .treeframe.tree -selectmode browse \
                 -striped true -columns {chr name}]
     set cwidth [font measure BigFont W]
