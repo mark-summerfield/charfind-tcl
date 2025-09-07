@@ -46,6 +46,8 @@ oo::define App method prepare_ui {} {
     font create BigFont -family [font configure TkDefaultFont -family] \
         -size [expr {3 + [font configure TkDefaultFont -size]}]
     ttk::style configure Treeview -font BigFont
+    ttk::style configure Treeview -rowheight \
+        [font metrics BigFont -linespace]
 }
 
 oo::define App method make_widgets {} {
