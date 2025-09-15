@@ -1,4 +1,5 @@
 # Copyright © 2025 Mark Summerfield. All rights reserved.
+################################################################
 
 proc bool_to_str b {expr {$b ? true : false}}
 
@@ -12,7 +13,9 @@ proc list_to_str lst {
 
 proc commas n {regsub -all {\d(?=(\d{3})+($|\.))} $n {\0,}}
 
-proc lrandom lst { lindex $lst [expr {int(rand() * [llength $lst])}] }
+proc lrandom lst {
+    lindex $lst [expr {int(rand() * [llength $lst])}]
+}
 
 namespace eval util {}
 
@@ -30,8 +33,9 @@ proc util::pre_process_args argv {
                                    [string range $arg 2 end]
                 }
             } else {
-                lappend ppargv [string range $arg 0 [expr {$i - 1}]] \
-                               [string range $arg [expr {$i + 1}] end]
+                lappend ppargv \
+                    [string range $arg 0 [expr {$i - 1}]] \
+                    [string range $arg [expr {$i + 1}] end]
             }
         } else {
             lappend ppargv $arg
@@ -47,21 +51,27 @@ proc util::term_width {{defwidth 72}} {
     return $defwidth ;# redirected
 }
 
-proc util::islink filename { expr {![catch {file link $filename}]} }
+proc util::islink filename {
+    expr {![catch {file link $filename}]}
+}
 
-proc util::uid {} { return #[string range [clock clicks] end-8 end] }
+proc util::uid {} {
+    return #[string range [clock clicks] end-8 end]
+}
 
 proc util::get_ini_filename {} {
     set name [string totitle [tk appname]].ini
     set home [file home]
     if {[tk windowingsystem] eq "win32"} {
-        set names [list [file join $home $name] $::APPPATH/$name]
+        set names [list [file join $home $name] \
+            $::APPPATH/$name]
         set index 0
     } else {
-        set names [list [file join $home .config/$name] \
-                        [file join $home .$name] $::APPPATH/$name]
+        set names [list \
+                [file join $home .config/$name] \
+                [file join $home .$name] $::APPPATH/$name]
         set index [expr {[file isdirectory \
-                            [file join $home .config]] ? 0 : 1}]
+                [file join $home .config]] ? 0 : 1}]
     }
     foreach name $names {
         set name [file normalize $name]
@@ -103,8 +113,8 @@ proc util::humanize {value {suffix B}} {
     }
 
     set log_n [expr {int(log($value) / log(1024))}]
-    set prefix [lindex [list "" "Ki" "Mi" "Gi" "Ti" "Pi" "Ei" "Zi" "Yi"] \
-        $log_n]
+    set prefix [lindex [list "" "Ki" "Mi" "Gi" "Ti" "Pi" \
+        "Ei" "Zi" "Yi"] $log_n]
     set value [expr {$value / (pow(1024, $log_n))}]
     set value [expr {$value * $factor}]
     set dp [expr {$log_n < 2 ? 0 : 1}]
