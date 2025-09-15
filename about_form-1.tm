@@ -76,7 +76,7 @@ oo::define AboutForm method Populate {} {
     }
     set bits [expr {8 * $::tcl_platform(wordSize)}]
     if {[tk windowingsystem] eq "x11"} {
-        set distro [exec lsb_release -ds]
+        catch { set distro [exec lsb_release -ds] }
     }
     {*}$add \
         "https://github.com/mark-summerfield/charfind-tcl\n" \
