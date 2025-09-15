@@ -108,6 +108,6 @@ oo::define AboutForm method AddTextTags txt {
     {*}$cmd bold -font bold
     {*}$cmd italic -font italic
     {*}$cmd url -underline true -underlinefg darkgreen
-    {*}$cmd hr -overstrike true -overstrikefg lightgray \
+    {*}$cmd hr -overstrike true -overstrikefg gray67 \
         -spacing3 10
 }
