@@ -48,6 +48,7 @@ oo::define App method prepare_ui {} {
     ttk::style configure Treeview -font BigFont
     ttk::style configure Treeview -rowheight \
         [font metrics BigFont -linespace]
+    ttk::style configure Treeview.Item -indicatorsize 0
 }
 
 oo::define App method make_widgets {} {
