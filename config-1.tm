@@ -4,7 +4,7 @@ package require inifile
 package require util
 
 # Also handles tk scaling
-oo::class create Config {
+oo::singleton create Config {
     variable Filename
     variable Blinking
     variable Geometry
@@ -47,7 +47,6 @@ oo::define Config classmethod load {} {
         }
     }
     if {[$config search] eq ""} { $config set_search symbol }
-    return $config
 }
 
 oo::define Config method save {} {

@@ -10,7 +10,6 @@ package require ui
 package require util
 
 oo::class create App {
-    variable Cfg
     variable SearchCombo
     variable ClickedEntry
     variable Tree
@@ -20,13 +19,14 @@ oo::class create App {
 oo::define App constructor {} {
     ui::wishinit
     tk appname CharFind
-    set Cfg [Config load]
+    Config load
     my make_ui
 }
 
 oo::define App method show {} {
     wm deiconify .
-    wm geometry . [$Cfg geometry]
+    set config [Config new]
+    wm geometry . [$config geometry]
     raise .
     update
     my on_startup
@@ -52,9 +52,10 @@ oo::define App method prepare_ui {} {
 }
 
 oo::define App method make_widgets {} {
+    set config [Config new]
     ttk::frame .topframe
     ttk::label .topframe.searchLabel -text "Search Word:" -underline 7
-    set search [$Cfg search]
+    set search [$config search]
     set SearchCombo [ttk::combobox .topframe.searchCombo -values \
         [lsort -dictionary -unique \
             "$search arrow check ballot bullet greek math sign symbol"]]
@@ -80,7 +81,7 @@ oo::define App method make_widgets {} {
         -image [ui::icon quit.svg $::MENU_ICON_SIZE]
     .bottomframe.moreButton configure -menu .bottomframe.moreButton.menu
     set ClickedEntry [ttk::entry .bottomframe.clickedEntry]
-    $ClickedEntry insert 0 [$Cfg clicked]
+    $ClickedEntry insert 0 [$config clicked]
     set StatusLabel [ttk::label .statusLabel -relief sunken]
 }
 
@@ -212,13 +213,14 @@ oo::define App method add_row {chr cp name} {
     $Tree insert {} end -text $chr -values "[format %04X $cp] {$name}"
 }
 
-oo::define App method on_config {} { ConfigForm new $Cfg }
+oo::define App method on_config {} { ConfigForm new }
 
 oo::define App method on_about {} { AboutForm new }
 
 oo::define App method on_quit {} {
-    $Cfg set_search [$SearchCombo get]
-    $Cfg set_clicked [$ClickedEntry get]
-    $Cfg save
+    set config [Config new]
+    $config set_search [$SearchCombo get]
+    $config set_clicked [$ClickedEntry get]
+    $config save
     exit
 }

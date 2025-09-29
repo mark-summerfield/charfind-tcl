@@ -7,13 +7,12 @@ package require ui
 oo::class create ConfigForm {
     superclass AbstractForm
 
-    variable Cfg
     variable Blinking
 }
 
-oo::define ConfigForm constructor cfg {
-    set Cfg $cfg
-    set Blinking [$Cfg blinking]
+oo::define ConfigForm constructor {} {
+    set config [Config new]
+    set Blinking [$config blinking]
     my make_widgets 
     my make_layout
     my make_bindings
@@ -22,6 +21,7 @@ oo::define ConfigForm constructor cfg {
 }
 
 oo::define ConfigForm method make_widgets {} {
+    set config [Config new]
     tk::toplevel .configForm
     wm resizable .configForm false false
     wm title .configForm "[tk appname] — Config"
@@ -44,7 +44,7 @@ oo::define ConfigForm method make_widgets {} {
     ttk::label .configForm.frame.configFileLabel -foreground gray25 \
         -text "Config file"
     ttk::label .configForm.frame.configFilenameLabel -foreground gray25 \
-        -text [$Cfg filename] -relief sunken
+        -text [$config filename] -relief sunken
     ttk::frame .configForm.frame.buttons
     ttk::button .configForm.frame.buttons.okButton -text OK -underline 0 \
         -compound left -image [ui::icon ok.svg $::ICON_SIZE] \
@@ -86,8 +86,9 @@ oo::define ConfigForm method make_bindings {} {
 }
 
 oo::define ConfigForm method on_ok {} {
+    set config [Config new]
     tk scaling [.configForm.frame.scaleSpinbox get]
-    $Cfg set_blinking $Blinking
+    $config set_blinking $Blinking
     my delete
 }
 
