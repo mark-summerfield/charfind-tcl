@@ -12,41 +12,31 @@ oo::singleton create Config {
     variable Clicked
 }
 
-oo::define Config constructor {{filename ""} {geometry ""}} {
-    set Filename $filename
+oo::define Config constructor {} {
     set Blinking true
-    set Geometry $geometry
+    set Geometry ""
     set Search "symbol"
     set Clicked ""
-}
-
-oo::define Config classmethod load {} {
-    set filename [util::get_ini_filename]
-    set config [Config new]
-    $config set_filename $filename
-    if {[file exists $filename] && [file size $filename]} {
-        set ini [ini::open $filename -encoding utf-8 r]
+    set Filename [util::get_ini_filename]
+    if {[file exists $Filename] && [file size $Filename]} {
+        set ini [ini::open $Filename -encoding utf-8 r]
         try {
             tk scaling [ini::value $ini General Scale 1.0]
-            $config set_blinking [ini::value $ini General Blinking \
-                                    [$config blinking]]
-            if {![$config blinking]} {
+            set Blinking [ini::value $ini General Blinking $Blinking]
+            if {!$Blinking} {
                 option add *insertOffTime 0
                 ttk::style configure . -insertofftime 0
             }
-            $config set_geometry [ini::value $ini General Geometry \
-                [$config geometry]]
-            $config set_search [ini::value $ini General Search \
-                [$config search]]
-            $config set_clicked [ini::value $ini General Clicked \
-                [$config clicked]]
+            set Geometry [ini::value $ini General Geometry $Geometry]
+            set Search [ini::value $ini General Search $Search]
+            set Clicked [ini::value $ini General Clicked $Clicked]
         } on error err {
-            puts "invalid config in '$filename'; using defaults: $err"
+            puts "invalid config in '$Filename'; using defaults: $err"
         } finally {
             ini::close $ini
         }
     }
-    if {[$config search] eq ""} { $config set_search symbol }
+    if {$Search eq ""} { set Search symbol }
 }
 
 oo::define Config method save {} {

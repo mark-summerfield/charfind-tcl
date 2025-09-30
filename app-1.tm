@@ -19,7 +19,6 @@ oo::class create App {
 oo::define App constructor {} {
     ui::wishinit
     tk appname CharFind
-    Config load
     my make_ui
 }
 
