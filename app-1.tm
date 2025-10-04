@@ -215,7 +215,10 @@ oo::define App method add_row {chr cp name} {
 
 oo::define App method on_config {} { ConfigForm new }
 
-oo::define App method on_about {} { AboutForm new }
+oo::define App method on_about {} {
+    AboutForm new "A Unicode character finder" \
+        https://github.com/mark-summerfield/charfind-tcl
+}
 
 oo::define App method on_quit {} {
     set config [Config new]
