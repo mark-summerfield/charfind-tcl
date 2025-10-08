@@ -65,7 +65,7 @@ oo::define App method make_widgets {} {
         -compound left -command [callback on_search] \
         -image [ui::icon edit-find.svg $::ICON_SIZE]
     my make_tree
-    ttk::frame .bottomframe
+    ttk::frame .bottomframe -relief sunken
     ttk::label .bottomframe.clickedLabel -text Clicked: -underline 4
     ttk::menubutton .bottomframe.moreButton -text More -underline 0
     menu .bottomframe.moreButton.menu
@@ -82,7 +82,7 @@ oo::define App method make_widgets {} {
     .bottomframe.moreButton configure -menu .bottomframe.moreButton.menu
     set ClickedEntry [ttk::entry .bottomframe.clickedEntry]
     $ClickedEntry insert 0 [$config clicked]
-    set StatusLabel [ttk::label .statusLabel -relief sunken]
+    set StatusLabel [ttk::label .statusLabel]
 }
 
 oo::define App method make_tree {} {
@@ -111,7 +111,8 @@ oo::define App method make_layout {} {
     pack $ClickedEntry -side left -fill x -expand true {*}$opts
     pack .bottomframe.moreButton -side right {*}$opts
     pack .bottomframe -fill x
-    pack .statusLabel -fill x
+    pack .statusLabel -fill x {*}$opts
+    pack [ttk::sizegrip .statusLabel.grip] -side right -anchor se {*}$opts
 }
 
 oo::define App method make_bindings {} {
