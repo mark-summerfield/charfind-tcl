@@ -164,8 +164,7 @@ oo::define App method on_search_combo {} {
 
 oo::define App method on_search {} {
     $Tree delete [$Tree children {}]
-    set what [$SearchCombo get]
-    if {$what eq ""} {
+    if {[set what [$SearchCombo get]] eq ""} {
         $StatusLabel configure -text "Enter a search for term…"
         return
     }
@@ -200,8 +199,7 @@ oo::define App method on_search {} {
         }
     }
     db close
-    set count [llength [$Tree children {}]]
-    if {!$count} {
+    if {![set count [llength [$Tree children {}]]]} {
         $StatusLabel configure -text "No matching characters found"
     } else {
         lassign [util::n_s $count true] n s

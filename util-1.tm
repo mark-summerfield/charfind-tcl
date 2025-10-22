@@ -1,17 +1,14 @@
 # Copyright © 2025 Mark Summerfield. All rights reserved.
-################################################################
+
+proc commas n {regsub -all {\d(?=(\d{3})+($|\.))} $n {\0,}}
 
 proc bool_to_str b {expr {$b ? true : false}}
 
 proc list_to_str lst {
     set str [list]
-    foreach x $lst {
-        lappend str "'$x'"
-    }
+    foreach x $lst { lappend str "'$x'" }
     return "{[join $str " "]}"
 }
-
-proc commas n {regsub -all {\d(?=(\d{3})+($|\.))} $n {\0,}}
 
 proc lrandom lst {
     lindex $lst [expr {int(rand() * [llength $lst])}]
@@ -23,8 +20,7 @@ proc util::pre_process_args argv {
     set ppargv [list]
     foreach arg $argv {
         if {[string match {-*} $arg]} {
-            set i [string first = $arg]
-            if {$i == -1} {
+            if {[set i [string first = $arg]] == -1} {
                 if {[string match {--*} $arg] || \
                         [string length $arg] == 2} {
                     lappend ppargv $arg
@@ -63,36 +59,29 @@ proc util::get_ini_filename {} {
     set name [string totitle [tk appname]].ini
     set home [file home]
     if {[tk windowingsystem] eq "win32"} {
-        set names [list [file join $home $name] \
-            $::APPPATH/$name]
+        set names [list [file join $home $name] $::APPPATH/$name]
         set index 0
     } else {
-        set names [list \
-                [file join $home .config/$name] \
-                [file join $home .$name] $::APPPATH/$name]
-        set index [expr {[file isdirectory \
-                [file join $home .config]] ? 0 : 1}]
+        set names [list [file join $home .config/$name] \
+                        [file join $home .$name] $::APPPATH/$name]
+        set index [expr {[file isdirectory [file join $home .config]] ? 0 \
+                                                                      : 1}]
     }
     foreach name $names {
         set name [file normalize $name]
-        if {[file exists $name]} {
-            return $name
-        }
+        if {[file exists $name]} { return $name }
     }
     lindex $names $index
 }
 
-proc util::open_webpage url {
+proc util::open_url url {
     if {[tk windowingsystem] eq "win32"} {
         set cmd [list {*}[auto_execok start] {}]
     } else {
         set cmd [auto_execok xdg-open]
     }
-    try {
-        exec {*}$cmd $url &
-    } on error err {
-        puts "failed to open $url: $err"
-    }
+    # may throw an error
+    exec {*}$cmd $url &
 }
 
 proc util::n_s {size {comma false}} {
@@ -113,8 +102,8 @@ proc util::humanize {value {suffix B}} {
     }
 
     set log_n [expr {int(log($value) / log(1024))}]
-    set prefix [lindex [list "" "Ki" "Mi" "Gi" "Ti" "Pi" \
-        "Ei" "Zi" "Yi"] $log_n]
+    set prefix [lindex [list "" "Ki" "Mi" "Gi" "Ti" "Pi" "Ei" "Zi" "Yi"] \
+        $log_n]
     set value [expr {$value / (pow(1024, $log_n))}]
     set value [expr {$value * $factor}]
     set dp [expr {$log_n < 2 ? 0 : 1}]
