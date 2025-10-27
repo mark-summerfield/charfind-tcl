@@ -9,7 +9,7 @@ package require textutil::string
 package require ui
 package require util
 
-oo::class create App {
+oo::singleton create App {
     variable SearchCombo
     variable ClickedEntry
     variable Tree
