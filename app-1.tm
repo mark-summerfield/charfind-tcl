@@ -88,7 +88,7 @@ oo::define App method make_widgets {} {
 oo::define App method make_tree {} {
     ttk::frame .treeframe
     set Tree [ttk::treeview .treeframe.tree -selectmode browse \
-                -striped true -columns {chr name}]
+                -striped true -columns {uni name}]
     set cwidth [font measure BigFont W]
     $Tree column #0 -width [expr {$cwidth * 3}] -stretch false \
         -anchor center
