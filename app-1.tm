@@ -53,15 +53,16 @@ oo::define App method prepare_ui {} {
 
 oo::define App method make_widgets {} {
     set config [Config new]
-    ttk::frame .topframe
-    ttk::label .topframe.searchLabel -text "Search Word:" -underline 7
+    ttk::frame .mf
+    ttk::label .mf.searchLabel -text "Search Word:" -underline 7
     set search [$config search]
-    set SearchCombo [ttk::combobox .topframe.searchCombo -values \
+    set SearchCombo [ttk::combobox .mf.searchCombo -values \
         [lsort -dictionary -unique \
             "$search arrow check ballot bullet greek math sign symbol"]]
+    ui::apply_edit_bindings $SearchCombo
     $SearchCombo set $search
     $SearchCombo selection range 0 end
-    ttk::button .topframe.searchButton -text Search -underline 0 \
+    ttk::button .mf.searchButton -text Search -underline 0 \
         -compound left -command [callback on_search] \
         -image [ui::icon edit-find.svg $::ICON_SIZE]
     my make_tree
@@ -82,6 +83,7 @@ oo::define App method make_widgets {} {
     .bottomframe.moreButton configure -menu .bottomframe.moreButton.menu
     set ClickedEntry [ttk::entry .bottomframe.clickedEntry]
     $ClickedEntry insert 0 [$config clicked]
+    ui::apply_edit_bindings $ClickedEntry
     set StatusLabel [ttk::label .statusLabel]
 }
 
@@ -102,10 +104,10 @@ oo::define App method make_tree {} {
 
 oo::define App method make_layout {} {
     const opts "-pady 3 -padx 3"
-    pack .topframe.searchLabel -side left {*}$opts
+    pack .mf.searchLabel -side left {*}$opts
     pack $SearchCombo -side left -fill x -expand true {*}$opts
-    pack .topframe.searchButton -side left {*}$opts
-    pack .topframe -fill x
+    pack .mf.searchButton -side left {*}$opts
+    pack .mf -fill x
     pack .treeframe -fill both -expand true -padx 3
     pack .bottomframe.clickedLabel -side left {*}$opts
     pack $ClickedEntry -side left -fill x -expand true {*}$opts
