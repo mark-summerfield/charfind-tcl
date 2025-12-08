@@ -1,6 +1,6 @@
 # CharFind
 
-`charfind.tcl` is a GUI Unicode character finder.
+`charfind.tk` is a GUI Unicode character finder.
 
 Once installed you must create the unicode character database
 (`unidata.db`) the application depends on. To do this run:

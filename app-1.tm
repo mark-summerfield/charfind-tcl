@@ -4,6 +4,7 @@ package require about_form
 package require config
 package require config_form
 package require message_form
+package require scrollutil_tile 2
 package require sqlite3 3
 package require textutil::string
 package require ui
@@ -89,8 +90,11 @@ oo::define App method make_widgets {} {
 
 oo::define App method make_tree {} {
     ttk::frame .treeframe
-    set Tree [ttk::treeview .treeframe.tree -selectmode browse \
+    set sa [scrollutil::scrollarea .treeframe.sa]
+    set Tree [ttk::treeview .treeframe.sa.tree -selectmode browse \
                 -striped true -columns {uni name}]
+    $sa setwidget $Tree
+    pack $sa -fill both -expand 1
     set cwidth [font measure BigFont W]
     $Tree column #0 -width [expr {$cwidth * 3}] -stretch false \
         -anchor center
@@ -99,7 +103,6 @@ oo::define App method make_tree {} {
     $Tree heading #0 -text Chr
     $Tree heading 0 -text U+
     $Tree heading 1 -text Name
-    ui::scrollize .treeframe tree vertical
 }
 
 oo::define App method make_layout {} {
