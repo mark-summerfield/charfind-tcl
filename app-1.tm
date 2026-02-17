@@ -93,6 +93,7 @@ oo::define App method make_tree {} {
     set sa [scrollutil::scrollarea .treeframe.sa]
     set Tree [ttk::treeview .treeframe.sa.tree -selectmode browse \
                 -striped true -columns {uni name}]
+    ui::apply_treeview_bindings $Tree
     $sa setwidget $Tree
     pack $sa -fill both -expand 1
     set cwidth [font measure BigFont W]
