@@ -1,7 +1,6 @@
 # Copyright © 2025 Mark Summerfield. All rights reserved.
 
 package require about_form
-package require config
 package require config_form
 package require message_form
 package require scrollutil_tile 2
@@ -19,8 +18,7 @@ oo::singleton create App {
 
 oo::define App constructor {} {
     ui::wishinit
-    tk appname CharFind
-    Config new ;# we need tk scaling done early
+    tk appname $::APPNAME
     my make_ui
 }
 
