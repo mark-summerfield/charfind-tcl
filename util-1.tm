@@ -49,13 +49,9 @@ proc util::term_width {{defwidth 72}} {
     return $defwidth ;# redirected
 }
 
-proc util::islink filename {
-    expr {![catch {file link $filename}]}
-}
+proc util::islink filename { expr {![catch {file link $filename}]} }
 
-proc util::uid {} {
-    return #[string range [clock clicks] end-8 end]
-}
+proc util::uid {} { return #[string range [clock clicks] end-8 end] }
 
 proc util::get_ini_filename {} {
     set name [string totitle [tk appname]].ini
