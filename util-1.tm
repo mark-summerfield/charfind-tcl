@@ -10,9 +10,7 @@ proc list_to_str lst {
     return "{[join $str " "]}"
 }
 
-proc lrandom lst {
-    lindex $lst [expr {int(rand() * [llength $lst])}]
-}
+proc lrandom lst { lindex $lst [expr {int(rand() * [llength $lst])}] }
 
 namespace eval util {}
 
