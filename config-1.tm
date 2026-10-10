@@ -13,7 +13,7 @@ oo::singleton create Config {
 }
 
 oo::define Config constructor {} {
-    set Blinking true
+    set Blinking 1
     set Geometry ""
     set Search "symbol"
     set Clicked ""
@@ -53,19 +53,19 @@ oo::define Config method save {} {
     }
 }
 
-oo::define Config method filename {} { return $Filename }
+oo::define Config method filename {} { set Filename }
 oo::define Config method set_filename filename { set Filename $filename }
 
-oo::define Config method blinking {} { return $Blinking }
+oo::define Config method blinking {} { set Blinking }
 oo::define Config method set_blinking blinking { set Blinking $blinking }
 
-oo::define Config method geometry {} { return $Geometry }
+oo::define Config method geometry {} { set Geometry }
 oo::define Config method set_geometry geometry { set Geometry $geometry }
 
-oo::define Config method search {} { return $Search }
+oo::define Config method search {} { set Search }
 oo::define Config method set_search search { set Search $search }
 
-oo::define Config method clicked {} { return $Clicked }
+oo::define Config method clicked {} { set Clicked }
 oo::define Config method set_clicked clicked { set Clicked $clicked }
 
 oo::define Config method to_string {} {

@@ -1,5 +1,4 @@
 # Copyright © 2025 Mark Summerfield. All rights reserved.
-################################################################
 
 package require abstract_form
 package require ui
@@ -8,15 +7,13 @@ oo::class create MessageForm { superclass AbstractForm }
 
 # kind must be one of: info warning error
 
-oo::define MessageForm classmethod show {title body_text \
-        {button_text OK} {kind info}} {
-    set form [MessageForm new $title $body_text $button_text \
-                $kind]
+oo::define MessageForm classmethod show {title body_text {button_text OK} \
+        {kind info}} {
+    set form [MessageForm new $title $body_text $button_text $kind]
     tkwait window .message_form
 }
 
-oo::define MessageForm constructor {title body_text button_text \
-        kind} {
+oo::define MessageForm constructor {title body_text button_text kind} {
     my make_widgets $title $body_text $button_text $kind
     my make_layout
     my make_bindings $button_text
@@ -24,8 +21,8 @@ oo::define MessageForm constructor {title body_text button_text \
     my show_modal .message_form.the_button
 }
 
-oo::define MessageForm method make_widgets {title body_text \
-        button_text kind} {
+oo::define MessageForm method make_widgets {title body_text button_text \
+        kind} {
     if {[info exists ::ICON_SIZE]} {
         set size $::ICON_SIZE
     } else {
@@ -37,7 +34,7 @@ oo::define MessageForm method make_widgets {title body_text \
         error { set color pink }
     }
     tk::toplevel .message_form -background $color
-    wm resizable .message_form false false
+    wm resizable .message_form 0 0
     wm title .message_form $title
     ttk::frame .message_form.frame
     ttk::label .message_form.frame.label -text $body_text \
@@ -51,8 +48,7 @@ oo::define MessageForm method make_widgets {title body_text \
 
 oo::define MessageForm method make_layout {} {
     set opts "-padx 3 -pady 3"
-    pack .message_form.frame.label -fill both -expand true \
-        {*}$opts
+    pack .message_form.frame.label -fill both -expand 1 {*}$opts
     pack .message_form.frame.the_button -side bottom {*}$opts
 }
 

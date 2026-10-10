@@ -90,15 +90,15 @@ oo::define App method make_tree {} {
     ttk::frame .treeframe
     set sa [scrollutil::scrollarea .treeframe.sa]
     set Tree [ttk::treeview .treeframe.sa.tree -selectmode browse \
-                -striped true -columns {uni name}]
+                -striped 1 -columns {uni name}]
     ui::apply_treeview_bindings $Tree
     $sa setwidget $Tree
     pack $sa -fill both -expand 1
     set cwidth [font measure BigFont W]
-    $Tree column #0 -width [expr {$cwidth * 3}] -stretch false \
+    $Tree column #0 -width [expr {$cwidth * 3}] -stretch 0 \
         -anchor center
-    $Tree column 0 -width [expr {$cwidth * 7}] -stretch false -anchor center
-    $Tree column 1 -stretch true
+    $Tree column 0 -width [expr {$cwidth * 7}] -stretch 0 -anchor center
+    $Tree column 1 -stretch 1
     $Tree heading #0 -text Chr
     $Tree heading 0 -text U+
     $Tree heading 1 -text Name
@@ -107,12 +107,12 @@ oo::define App method make_tree {} {
 oo::define App method make_layout {} {
     const opts "-pady 3 -padx 3"
     pack .mf.searchLabel -side left {*}$opts
-    pack $SearchCombo -side left -fill x -expand true {*}$opts
+    pack $SearchCombo -side left -fill x -expand 1 {*}$opts
     pack .mf.searchButton -side left {*}$opts
     pack .mf -fill x
-    pack .treeframe -fill both -expand true -padx 3
+    pack .treeframe -fill both -expand 1 -padx 3
     pack .bottomframe.clickedLabel -side left {*}$opts
-    pack $ClickedEntry -side left -fill x -expand true {*}$opts
+    pack $ClickedEntry -side left -fill x -expand 1 {*}$opts
     pack .bottomframe.moreButton -side right {*}$opts
     pack .bottomframe -fill x
     pack .statusLabel -fill x {*}$opts
@@ -176,7 +176,7 @@ oo::define App method on_search {} {
     lappend values $what
     $SearchCombo configure -values [lsort -dictionary -unique $values]
     set what [string toupper $what]
-    sqlite3 db $::UNIDATA_FILE -readonly true
+    sqlite3 db $::UNIDATA_FILE -readonly 1
     if {[string match SYM* $what]} {
         db eval {SELECT chr, cp, name FROM chars WHERE is_symbol = TRUE
                  ORDER BY cp} {
@@ -206,7 +206,7 @@ oo::define App method on_search {} {
     if {![set count [llength [$Tree children {}]]]} {
         $StatusLabel configure -text "No matching characters found"
     } else {
-        lassign [util::n_s $count true] n s
+        lassign [util::n_s $count 1] n s
         $StatusLabel configure -text "Found $n matching character$s"
     }
 }

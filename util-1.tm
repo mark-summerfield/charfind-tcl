@@ -44,7 +44,7 @@ proc util::term_width {{defwidth 72}} {
     if {[dict exists [chan configure stdout] -mode]} { ;# tty
         return [lindex [chan configure stdout -winsize] 0]
     }
-    return $defwidth ;# redirected
+    set defwidth ;# redirected
 }
 
 proc util::islink filename { expr {![catch {file link $filename}]} }
@@ -80,7 +80,7 @@ proc util::open_url url {
     exec {*}$cmd $url &
 }
 
-proc util::n_s {size {comma false}} {
+proc util::n_s {size {comma 0}} {
     if {!$size} { return [list "no" "s"] }
     if {$size == 1} { return [list "one" ""] }
     if {$comma} { return [list [commas $size] "s"] }

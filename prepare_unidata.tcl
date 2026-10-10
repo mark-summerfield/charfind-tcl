@@ -118,8 +118,8 @@ oo::class create Char {
 oo::define Char constructor {data} {
     set Cp -1
     set Name ""
-    set IsSymbol false
-    set valid true
+    set IsSymbol 0
+    set valid 1
     set i 0
     while {$i < [string length $data]} {
         set j [string first =\" $data $i]
@@ -128,7 +128,7 @@ oo::define Char constructor {data} {
         set j [string first \" $data $i]
         set value [string range $data $i [expr {$j - 1}]]
         switch $key {
-            ccc { if {$value ne "0"} { set valid false } }
+            ccc { if {$value ne "0"} { set valid 0 } }
             cp { set Cp [expr {"0x$value"}] }
             blk {
                 switch $value {
@@ -143,21 +143,21 @@ oo::define Char constructor {data} {
                     Symbols_And_Pictographs_Ext_A - \
                     Symbols_For_Legacy_Computing - \
                     Symbols_For_Legacy_Computing_Sup - Transport_And_Map \
-                        { set IsSymbol true }
+                        { set IsSymbol 1 }
                     High_PU_Surrogates - High_Surrogates - Low_Surrogates \
-                        { set valid false }
+                        { set valid 0 }
                 }
             }
-            gc { switch $value { Sm - Sc { set IsSymbol true } } }
-            Math { if {$value ne "N"} { set IsSymbol true } }
+            gc { switch $value { Sm - Sc { set IsSymbol 1 } } }
+            Math { if {$value ne "N"} { set IsSymbol 1 } }
             na { set Name $value }
-            OMath { if {$value ne "N"} { set IsSymbol true } }
-            WSpace { if {$value ne "N"} { set valid false } }
+            OMath { if {$value ne "N"} { set IsSymbol 1 } }
+            WSpace { if {$value ne "N"} { set valid 0 } }
         }
         set i [incr j 2]
     }
     if {$Name eq "" || [regexp {^(?:MODIFIER|COMBINING|VARIATION)} $Name]} {
-        set valid false
+        set valid 0
     }
     if {!$valid} { set Cp -1 }
 }
