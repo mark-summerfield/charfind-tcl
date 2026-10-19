@@ -13,11 +13,11 @@ oo::singleton create Config {
 }
 
 oo::define Config constructor {} {
+    set Filename [util::get_ini_filename]
     set Blinking 1
     set Geometry ""
     set Search "symbol"
     set Clicked ""
-    set Filename [util::get_ini_filename]
     if {[file exists $Filename] && [file size $Filename]} {
         set ini [ini::open $Filename -encoding utf-8 r]
         try {
