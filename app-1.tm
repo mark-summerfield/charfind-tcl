@@ -27,7 +27,7 @@ oo::define App method show {} {
     set config [Config new]
     wm geometry . [$config geometry]
     raise .
-    update
+    update idletasks
     my on_startup
 }
 
